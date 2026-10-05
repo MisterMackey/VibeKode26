@@ -59,6 +59,18 @@ Index:
 ## Git workflow
 
 - Merge work into local `main` first, then push `main`; never push a branch or worktree ref straight to `origin/main`. Main has no write protection.
+- New worktrees branch from local HEAD (`worktree.baseRef: "head"` in `.claude/settings.json`), so unpushed commits on `main` are included.
+- A fresh worktree has no `node_modules` and no `.env`: run `npm ci` and copy `.env` from the main checkout before running anything.
+- After merging a change to `package-lock.json` into `main`, run `npm ci` in the main checkout so `npm run qa` passes there too.
+- Once `main` is pushed, remove your worktree and its branch (`git worktree remove`, `git branch -d`) without being asked.
+- Before you report done, stop every dev server, background process and CLI login you started.
+
+## Installing packages and programs
+
+- Stop and ask the user for explicit approval before you add, upgrade or remove any dependency, or install any program, CLI, browser binary or global package; name the package, the exact version and why it's needed.
+- A task that names a package approves that exact package only; a related package with a different name (for example a vendor CLI published as `auth`) needs its own approval.
+- If an install is refused or blocked by the user, the permission system or the sandbox, stop and report it; never substitute another package, a hand-written replacement or a different approach without approval.
+- `npm ci` and a bare `npm install` that only restore the lockfile need no approval.
 
 ## Maintenance
 
