@@ -13,6 +13,13 @@ import {
 } from "@/components/ui/form";
 import { authClient } from "@/lib/auth-client";
 
+// Where to go after logging in: `?next=` (set by /device), if it is a path on
+// this site. Anything else, like `//evil.example`, falls back to the home page.
+function nextPath(): string {
+  const next = new URLSearchParams(window.location.search).get("next");
+  return next?.startsWith("/") && !/^\/[/\\]/.test(next) ? next : "/";
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +41,7 @@ export default function LoginPage() {
       setError(signInError.message ?? "Could not log in.");
       return;
     }
-    router.push("/");
+    router.push(nextPath());
     router.refresh();
   }
 

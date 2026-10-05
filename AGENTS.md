@@ -10,14 +10,15 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # todo-cat
 
-A to-do list web app kept by Lissie, a cat with attitude (an AI agent, coming later). Next.js 16 App Router; npm workspaces `contract/` (shared zod schemas) and `cli/` (the `todo-cat` CLI, still empty).
+A to-do list web app kept by Lissie, a cat with attitude (an AI agent, coming later). Next.js 16 App Router; npm workspaces `contract/` (shared zod schemas) and `cli/` (the `todo-cat` CLI, a REST client).
 
 ## Commands
 
 - `npm run dev` — dev server
 - `npm run build` — production build
 - `npm test` — Vitest, one-shot (unit + integration)
-- `npm run qa` — full gate (Biome, build, typecheck, Vitest); run it before you call a task done and fix the code instead of suppressing findings
+- `npx todo-cat --help` — the CLI (built on `npm install`; rebuild after changes with `npm run build -w todo-cat-cli`)
+- `npm run qa` — full gate (Biome, app and CLI build, typecheck, Vitest); run it before you call a task done and fix the code instead of suppressing findings
 - `npm run db:generate` / `db:migrate` — drizzle-kit migration generate / apply
 - `npm run db:reset` — delete the local database file and migrate a fresh one
 - `npm run db:seed` — demo user `demo@todo-cat.dev` / `cat-person-2026` with a dozen todos; rerunnable
@@ -53,6 +54,7 @@ Index:
 - [tech-docs/testing.md](tech-docs/testing.md) — Vitest unit/integration split, Playwright e2e, QA script and CI, gotchas
 - [tech-docs/auth.md](tech-docs/auth.md) — Better Auth setup: Drizzle adapter, plugins, session helper, schema regeneration
 - [tech-docs/rest-api.md](tech-docs/rest-api.md) — `/api/todos` endpoints, error mapping, getting a bearer token with curl
+- [tech-docs/cli.md](tech-docs/cli.md) — `todo-cat` CLI: build, output and exit-code rules, device-flow login, token storage, end-to-end test
 
 ## Git workflow
 

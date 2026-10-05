@@ -13,13 +13,14 @@ Vitest is the only test runner. Config: `vitest.config.mts`.
 `npm run qa` (`scripts/qa.sh`) is the gate before any task is done: Biome, production build, typecheck (root and all workspaces via `npm run typecheck`), Vitest. Each section prints `PASS`/`FAIL`; only failing output is printed, everything goes to `.qa/qa.log` (override with `QA_LOG`). Exit code is non-zero on any failure; output has no colors.
 
 - Build runs before typecheck because Next generates global types (e.g. `LayoutProps`) in `.next/types`.
+- Build also runs before Vitest because `tests/integration/cli.test.ts` serves the production build with `next start` (see [cli.md](cli.md)); a separate `build-cli` section bundles the CLI.
 - Fix findings in the code; do not suppress them.
 - `.github/workflows/qa.yml` runs the same script on every push and pull request (Node 24, `npm ci`, dummy `.env` generated from `.env.example`; no real secrets, no deployment).
 - Playwright e2e is not part of `npm run qa` or CI: it needs browser binaries (`npx playwright install`) that aren't provisioned there. Run it manually with `npm run test:e2e`.
 
 ## Playwright e2e
 
-`e2e/*.spec.ts`, config in `playwright.config.ts`. Covers flows Vitest can't (real browser, async Server Components, full page navigation) — currently the sign-up/sign-out/sign-in flow in `e2e/auth.spec.ts`.
+`e2e/*.spec.ts`, config in `playwright.config.ts`. Covers flows Vitest can't (real browser, async Server Components, full page navigation) — currently sign-up/sign-out/sign-in (`e2e/auth.spec.ts`) and approving a CLI login code on `/device` (`e2e/device.spec.ts`).
 
 - `npm run test:e2e` — runs against `npm run dev`, which Playwright's `webServer` option starts and stops automatically.
 - The config calls `migrateTempDb()` (see [database.md](database.md)) directly at config-load time and passes the resulting URL to the dev server via `webServer.env.DATABASE_URL`; no need to wrap the command in `with-temp-db.ts`'s CLI mode.

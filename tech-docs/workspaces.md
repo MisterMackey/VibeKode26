@@ -6,7 +6,7 @@ The repo is an npm workspaces monorepo: the Next.js app at the root, plus `contr
 
 - The web app, the CLI, and the future agent (Lissie) must agree on the shape of a todo, so the schemas live in one shared package rather than in the app.
 - `contract/` (`@todo-cat/contract`) holds the shared zod schemas; the app and `cli/` depend on it instead of redefining types (see [architecture.md](architecture.md)).
-- `cli/` (`todo-cat-cli`) is meant to be the `todo-cat` command-line client of the same data; still empty.
+- `cli/` (`todo-cat-cli`) is the `todo-cat` command-line client of the same data, over the REST API (see [cli.md](cli.md)).
 - Creating the packages first fixed the dependency direction (app and cli depend on contract, never the reverse) before code accumulated.
 
 ## Gotchas

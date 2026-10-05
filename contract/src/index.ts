@@ -63,3 +63,53 @@ export const ErrorBody = z.object({
   error: z.object({ code: ErrorCode, message: z.string() }),
 });
 export type ErrorBody = z.infer<typeof ErrorBody>;
+
+// Better Auth endpoints the CLI calls. Better Auth owns these shapes; they live
+// here so the CLI declares none itself and fails loudly if they drift.
+
+// The only client id the server's device authorization flow accepts.
+export const CLI_CLIENT_ID = "todo-cat-cli";
+
+// POST /api/auth/device/code (RFC 8628 device authorization response).
+export const DeviceCode = z.object({
+  device_code: z.string().min(1),
+  user_code: z.string().min(1),
+  verification_uri: z.url(),
+  verification_uri_complete: z.url(),
+  expires_in: z.number(),
+  interval: z.number(),
+});
+export type DeviceCode = z.infer<typeof DeviceCode>;
+
+// POST /api/auth/device/token, success. The access token is a session token
+// that the bearer plugin accepts.
+export const DeviceToken = z.object({
+  access_token: z.string().min(1),
+  token_type: z.literal("Bearer"),
+});
+export type DeviceToken = z.infer<typeof DeviceToken>;
+
+// POST /api/auth/device/token, failure (400).
+export const DeviceTokenError = z.object({
+  error: z.enum([
+    "authorization_pending",
+    "slow_down",
+    "expired_token",
+    "access_denied",
+    "invalid_request",
+    "invalid_grant",
+  ]),
+  error_description: z.string(),
+});
+export type DeviceTokenError = z.infer<typeof DeviceTokenError>;
+
+// GET /api/auth/get-session: the signed-in user, or null without a session.
+export const SessionUser = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.email(),
+});
+export type SessionUser = z.infer<typeof SessionUser>;
+
+export const Session = z.object({ user: SessionUser }).nullable();
+export type Session = z.infer<typeof Session>;

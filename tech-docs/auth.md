@@ -1,11 +1,11 @@
 # Auth
 
-Better Auth (`better-auth`, `@better-auth/drizzle-adapter`), pinned to `1.7.7` exactly — later versions change the plugin/adapter APIs used here. Email+password only. The bearer plugin authenticates the REST API (see [rest-api.md](rest-api.md)); the device-authorization plugin is enabled for the CLI but has no page or client yet.
+Better Auth (`better-auth`, `@better-auth/drizzle-adapter`), pinned to `1.7.7` exactly — later versions change the plugin/adapter APIs used here. Email+password only. The bearer plugin authenticates the REST API (see [rest-api.md](rest-api.md)); the device-authorization plugin is the CLI's login, approved on the `/device` page and restricted to the CLI's client id (see [cli.md](cli.md)).
 
 ## Layout
 
 - `lib/auth.ts` — the Better Auth server instance (`auth`) and its config (`authOptions`), exported separately so tooling (see Schema below) can reuse the plugin/option list without constructing a real instance.
-- `lib/auth-client.ts` — the browser client (`better-auth/react`), used by `/signup` and `/login`.
+- `lib/auth-client.ts` — the browser client (`better-auth/react`, with the device-authorization client plugin), used by `/signup`, `/login` and `/device`.
 - `lib/session.ts` — `getUserId(headers): Promise<string | null>`. The **only** place that calls `auth.api.getSession`. Every future adapter (REST, agent tools, MCP) goes through this, not through `auth` directly.
 - `app/api/auth/[...all]/route.ts` — mounts `auth.handler` via `toNextJsHandler`.
 - `app/signup/page.tsx`, `app/login/page.tsx` — client components calling `authClient.signUp.email` / `signIn.email`.
@@ -32,10 +32,10 @@ To add a field or plugin: edit `lib/auth.ts`, mirror the same plugins/options in
 ## Testing
 
 - `tests/integration/auth.test.ts` — same temp-database + dynamic-import pattern as `tests/integration/db.test.ts` (see `database.md`): set `DATABASE_URL` to a freshly migrated temp db in `beforeAll`, then `await import("@/lib/auth")` / `await import("@/lib/session")` so the module-level `auth`/`db` singletons pick it up. Covers sign-up, right/wrong password sign-in, and `getUserId` against a cookie, a bearer token, and neither.
-  - Better Auth 1.7.7 doesn't have the `testUtils()` plugin described in the current docs (that's a newer version); use `better-auth/test`'s `convertSetCookieToCookie` and `auth.api.*`'s `returnHeaders: true` option instead — confirmed against the installed package's `.d.mts` files, not the docs site.
-- `e2e/auth.spec.ts` (Playwright) — real browser sign-up → sign-out → sign-in. Config and temp-database wiring in `testing.md`.
+  - Uses `better-auth/test`'s `convertSetCookieToCookie` and `auth.api.*`'s `returnHeaders: true` option for cookies and bearer tokens.
+  - 1.7.7 also ships the `testUtils()` plugin (`better-auth/plugins`; `createUser`, `saveUser`, `login` for session cookies); add it to a test-only instance built from `authOptions`, never to `lib/auth.ts` — see `tests/integration/cli.test.ts`.
+- `e2e/auth.spec.ts` (Playwright) — real browser sign-up → sign-out → sign-in; `e2e/device.spec.ts` — approving a device code. Config and temp-database wiring in `testing.md`.
 
 ## Not done yet
 
-- No `/device` page or client for device authorization yet; the CLI work wires it up.
 - No email verification, password reset, or rate limiting beyond Better Auth's defaults.

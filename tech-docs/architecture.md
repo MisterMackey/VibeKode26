@@ -45,7 +45,8 @@ around it. Hexagonal (ports and adapters), without the ceremony.
 ## The contract
 
 - The `contract/` workspace (`@todo-cat/contract`) holds the zod schemas for todos,
-  inputs, list filters, and the error body `{ error: { code, message } }`.
+  inputs, list filters, and the error body `{ error: { code, message } }`, plus the
+  Better Auth responses the CLI reads during login and `whoami`.
 - Server and clients import the same schemas. The CLI parses every response with
   them, so a server change that breaks the shape fails loudly in the client.
 - Validation lives in the schemas, at the adapter boundary. The service trusts its

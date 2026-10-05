@@ -41,6 +41,7 @@ FAIL $name"
 section lint npm run --silent lint
 # Build before typecheck: Next generates global types (e.g. LayoutProps) in .next/types.
 section build npm run --silent build
+section build-cli npm run --silent build --workspace todo-cat-cli
 section typecheck npm run --silent typecheck
 section test npm test --silent
 
