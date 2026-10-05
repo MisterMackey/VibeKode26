@@ -8,6 +8,7 @@
 - `cli/src/todos.ts` — one function per REST use case (list, show, add, edit/done/reopen, delete).
 - `cli/src/auth.ts` — `login` (device flow), `logout`, `whoami`, against Better Auth under `/api/auth`.
 - `cli/src/api.ts` — the only HTTP code; `cli/src/config.ts` — server URL and token file; `cli/src/errors.ts` — error codes and exit codes; `cli/src/output.ts` — text and JSON output.
+- `.claude/skills/todo-cat-cli/` — the agent skill for using the CLI on someone's behalf (workflows and pitfalls, not flags); update it when a command's behaviour changes.
 - Web side: `app/device/page.tsx` + `components/device-approval.tsx` (approve a code), `?next=` support in `app/login/page.tsx`.
 
 ## Build and running
