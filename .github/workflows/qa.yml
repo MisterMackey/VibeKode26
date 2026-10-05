@@ -1,0 +1,29 @@
+name: QA
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Generate dummy .env
+        run: |
+          cp .env.example .env
+          sed -i "s|^BETTER_AUTH_SECRET=.*|BETTER_AUTH_SECRET=$(openssl rand -base64 32)|" .env
+          sed -i "s|^OPENROUTER_API_KEY=.*|OPENROUTER_API_KEY=sk-or-v1-dummy|" .env
+      - run: npm run qa
+      - name: Upload QA log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-log
+          path: .qa/qa.log
+          if-no-files-found: ignore

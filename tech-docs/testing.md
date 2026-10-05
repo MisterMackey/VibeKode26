@@ -8,6 +8,15 @@ Vitest is the only test runner. Config: `vitest.config.mts`.
 - `npm run test:watch` — watch mode while developing.
 - `npx vitest run --project unit` (or `integration`) — one project only.
 
+## QA script and CI
+
+`npm run qa` (`scripts/qa.sh`) is the gate before any task is done: Biome, production build, typecheck (root and all workspaces via `npm run typecheck`), Vitest. Each section prints `PASS`/`FAIL`; only failing output is printed, everything goes to `.qa/qa.log` (override with `QA_LOG`). Exit code is non-zero on any failure; output has no colors.
+
+- Build runs before typecheck because Next generates global types (e.g. `LayoutProps`) in `.next/types`.
+- Fix findings in the code; do not suppress them.
+- `.github/workflows/qa.yml` runs the same script on every push and pull request (Node 24, `npm ci`, dummy `.env` generated from `.env.example`; no real secrets, no deployment).
+- No E2E/Playwright step: it is not used in this project.
+
 ## Strategy
 
 Two Vitest projects, split by directory so each gets the right environment:
