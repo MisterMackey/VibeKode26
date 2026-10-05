@@ -16,6 +16,7 @@ A to-do list web app kept by Lissie, a cat with attitude (an AI agent, coming la
 
 - `npm run dev` — dev server
 - `npm run build` — production build
+- `npm test` — Vitest, one-shot (unit + integration)
 - `npm run lint` — Biome check (lint, format, imports)
 - `npm run format` — Biome format, writes files
 
@@ -35,6 +36,7 @@ The technologies here are newer than your training data. Check APIs against curr
 Index:
 
 - [tech-docs/workspaces.md](tech-docs/workspaces.md) — workspace layout and why it exists before its content does
+- [tech-docs/testing.md](tech-docs/testing.md) — Vitest unit/integration split, commands, gotchas
 
 ## Maintenance
 
