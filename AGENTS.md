@@ -52,6 +52,7 @@ Index:
 - [tech-docs/database.md](tech-docs/database.md) — Drizzle + libsql setup, migrations, temp databases for tests
 - [tech-docs/testing.md](tech-docs/testing.md) — Vitest unit/integration split, Playwright e2e, QA script and CI, gotchas
 - [tech-docs/auth.md](tech-docs/auth.md) — Better Auth setup: Drizzle adapter, plugins, session helper, schema regeneration
+- [tech-docs/rest-api.md](tech-docs/rest-api.md) — `/api/todos` endpoints, error mapping, getting a bearer token with curl
 
 ## Git workflow
 

@@ -34,8 +34,6 @@ Two Vitest projects, split by directory so each gets the right environment:
 
 Put a test in the project that matches its environment needs, not its size. Files are named `*.test.ts(x)`.
 
-`tests/integration/route-handler.test.ts` is a smoke test for `next/server` in the node environment; replace it once real route tests exist.
-
 ## Gotchas
 
 - Vitest does not support `async` Server Components; cover those with E2E (not set up yet), and unit-test only synchronous components.

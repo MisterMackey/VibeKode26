@@ -1,6 +1,6 @@
 # Auth
 
-Better Auth (`better-auth`, `@better-auth/drizzle-adapter`), pinned to `1.7.7` exactly — later versions change the plugin/adapter APIs used here. Email+password only; the device-authorization and bearer plugins are enabled for the REST API and CLI to use later, but have no pages or clients of their own yet.
+Better Auth (`better-auth`, `@better-auth/drizzle-adapter`), pinned to `1.7.7` exactly — later versions change the plugin/adapter APIs used here. Email+password only. The bearer plugin authenticates the REST API (see [rest-api.md](rest-api.md)); the device-authorization plugin is enabled for the CLI but has no page or client yet.
 
 ## Layout
 
@@ -37,5 +37,5 @@ To add a field or plugin: edit `lib/auth.ts`, mirror the same plugins/options in
 
 ## Not done yet
 
-- No pages/clients for bearer or device-authorization — this afternoon's REST API and CLI work wires those up.
+- No `/device` page or client for device authorization yet; the CLI work wires it up.
 - No email verification, password reset, or rate limiting beyond Better Auth's defaults.
