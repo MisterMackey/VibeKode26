@@ -25,12 +25,19 @@ around it. Hexagonal (ports and adapters), without the ceremony.
 - The service returns contract types (plain objects, dates as ISO strings), never
   Drizzle rows.
 - Rule violations are a few typed errors with stable codes (`todo-not-found`,
-  `validation-failed`). Adapters map them; they don't invent their own.
+  `validation-failed`). Adapters map them; they don't invent their own. In code:
+  `TodoError` with a `code` from the contract's `ErrorCode`.
+- Writes take an optional trailing `now` so the dev seed can backdate todos; adapters
+  never pass it.
+- The list is ordered open before done, then newest first. The text filter uses
+  `instr(lower(title), lower(text))`, not `LIKE`, so `%` and `_` in user input
+  match literally.
 
 ## Data
 
-- `todos`: id, owner (user id, cascade delete with the user), title, optional due date,
-  done, created at, completed at.
+- `todos` (in `lib/schema.ts`): id, owner (user id, cascade delete with the user),
+  title, optional due date, done, created at, completed at. libsql enforces foreign
+  keys, so the cascade works; the service test covers it.
 - A due date is a date without time and stays an ISO `yyyy-mm-dd` string everywhere.
   A JavaScript `Date` is midnight UTC and shows the previous day west of Greenwich.
 - `completed at` is set when a todo is marked done and cleared when it's reopened.
@@ -43,6 +50,10 @@ around it. Hexagonal (ports and adapters), without the ceremony.
   them, so a server change that breaks the shape fails loudly in the client.
 - Validation lives in the schemas, at the adapter boundary. The service trusts its
   typed input but always enforces ownership.
+- Everything is in `contract/src/index.ts`; each schema and its inferred type share a
+  name (`Todo`, `CreateTodoInput`, `UpdateTodoInput`, `TodoListFilter`, `ErrorBody`).
+- The package exports its TypeScript source with no build step. Turbopack, Vitest and
+  tsx compile it as they go; it needs no `transpilePackages` entry.
 
 ## Adapters
 
@@ -66,5 +77,16 @@ around it. Hexagonal (ports and adapters), without the ceremony.
 ## Tests
 
 - The service is tested against a temp database with **two users for every use case**:
-  one user never sees, changes, or deletes the other's todos.
+  one user never sees, changes, or deletes the other's todos
+  (`tests/integration/todo-service.test.ts`; contract schemas in
+  `tests/unit/contract.test.ts`).
 - Adapter tests cover only the mapping: 401 without a user, error codes, status codes.
+
+## Dev seed
+
+- `npm run db:seed` (`scripts/seed.mts`) creates `demo@todo-cat.dev` / `cat-person-2026`
+  once and replaces that user's todos on every run, with dates relative to today.
+  It writes only through Better Auth and the todo service.
+- Scripts that import `lib/*` must run under `tsx --conditions=react-server`, or
+  `server-only` throws. They also need `.mts` for top-level await, since the root
+  package is CommonJS.

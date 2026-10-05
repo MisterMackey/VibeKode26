@@ -34,7 +34,7 @@ Two Vitest projects, split by directory so each gets the right environment:
 
 Put a test in the project that matches its environment needs, not its size. Files are named `*.test.ts(x)`.
 
-The two existing tests are smoke tests proving the harness works (jsdom + `@/` alias + JSX; node + `next/server`). Replace or delete them when real features give better coverage.
+`tests/integration/route-handler.test.ts` is a smoke test for `next/server` in the node environment; replace it once real route tests exist.
 
 ## Gotchas
 

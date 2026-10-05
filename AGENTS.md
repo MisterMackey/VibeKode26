@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # todo-cat
 
-A to-do list web app kept by Lissie, a cat with attitude (an AI agent, coming later). Next.js 16 App Router; npm workspaces `contract/` (shared zod schemas) and `cli/` (the `todo-cat` CLI), both still empty.
+A to-do list web app kept by Lissie, a cat with attitude (an AI agent, coming later). Next.js 16 App Router; npm workspaces `contract/` (shared zod schemas) and `cli/` (the `todo-cat` CLI, still empty).
 
 ## Commands
 
@@ -20,6 +20,7 @@ A to-do list web app kept by Lissie, a cat with attitude (an AI agent, coming la
 - `npm run qa` — full gate (Biome, build, typecheck, Vitest); run it before you call a task done and fix the code instead of suppressing findings
 - `npm run db:generate` / `db:migrate` — drizzle-kit migration generate / apply
 - `npm run db:reset` — delete the local database file and migrate a fresh one
+- `npm run db:seed` — demo user `demo@todo-cat.dev` / `cat-person-2026` with a dozen todos; rerunnable
 - `npm run lint` — Biome check (lint, format, imports)
 - `npm run format` — Biome format, writes files
 - `npm run test:e2e` — Playwright e2e tests against a real browser and a temp database; not part of `npm run qa` (see tech-docs/testing.md)
@@ -46,6 +47,7 @@ The technologies here are newer than your training data. Check APIs against curr
 
 Index:
 
+- [tech-docs/architecture.md](tech-docs/architecture.md) — todo service, contract, adapters: the rules every feature follows
 - [tech-docs/workspaces.md](tech-docs/workspaces.md) — workspace layout and why it exists before its content does
 - [tech-docs/database.md](tech-docs/database.md) — Drizzle + libsql setup, migrations, temp databases for tests
 - [tech-docs/testing.md](tech-docs/testing.md) — Vitest unit/integration split, Playwright e2e, QA script and CI, gotchas
