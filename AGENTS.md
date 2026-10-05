@@ -38,6 +38,10 @@ Index:
 - [tech-docs/workspaces.md](tech-docs/workspaces.md) — workspace layout and why it exists before its content does
 - [tech-docs/testing.md](tech-docs/testing.md) — Vitest unit/integration split, commands, gotchas
 
+## Git workflow
+
+- Merge work into local `main` first, then push `main`; never push a branch or worktree ref straight to `origin/main`. Main has no write protection.
+
 ## Maintenance
 
 Update AGENTS.md and the tech docs in the same change whenever a change invalidates a line or teaches a costly lesson. Prefer deleting over adding, pointers over prose, one sentence per bullet.
