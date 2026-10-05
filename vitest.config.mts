@@ -3,7 +3,13 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   plugins: [react()],
-  resolve: { tsconfigPaths: true },
+  resolve: {
+    tsconfigPaths: true,
+    // server-only throws outside Next's react-server condition; tests are server-side.
+    alias: {
+      "server-only": new URL("tests/empty.ts", import.meta.url).pathname,
+    },
+  },
   test: {
     projects: [
       {

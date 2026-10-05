@@ -18,12 +18,21 @@ A to-do list web app kept by Lissie, a cat with attitude (an AI agent, coming la
 - `npm run build` — production build
 - `npm test` — Vitest, one-shot (unit + integration)
 - `npm run qa` — full gate (Biome, build, typecheck, Vitest); run it before you call a task done and fix the code instead of suppressing findings
+- `npm run db:generate` / `db:migrate` — drizzle-kit migration generate / apply
+- `npm run db:reset` — delete the local database file and migrate a fresh one
 - `npm run lint` — Biome check (lint, format, imports)
 - `npm run format` — Biome format, writes files
 
 ## Verify, don't recall
 
 The technologies here are newer than your training data. Check APIs against current docs; don't rely on memory.
+
+## Researching docs
+
+- Vendor `llms.txt` files first when the vendor has one (Drizzle: https://orm.drizzle.team/llms.txt); follow its links to the exact page.
+- Next.js: the docs in `node_modules/next/dist/docs/` (they match the installed version).
+- Libraries with an installed skill (`.claude/skills/`: copilotkit, mastra, ...): use that skill.
+- Any other library: `npx ctx7@latest library <name> "<query>"`, then `npx ctx7@latest docs <libraryId> "<query>"` (see the find-docs skill).
 
 ## Tech docs
 
@@ -37,6 +46,7 @@ The technologies here are newer than your training data. Check APIs against curr
 Index:
 
 - [tech-docs/workspaces.md](tech-docs/workspaces.md) — workspace layout and why it exists before its content does
+- [tech-docs/database.md](tech-docs/database.md) — Drizzle + libsql setup, migrations, temp databases for tests
 - [tech-docs/testing.md](tech-docs/testing.md) — Vitest unit/integration split, QA script and CI, gotchas
 
 ## Git workflow

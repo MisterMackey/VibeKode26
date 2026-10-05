@@ -22,7 +22,7 @@ Vitest is the only test runner. Config: `vitest.config.mts`.
 Two Vitest projects, split by directory so each gets the right environment:
 
 - `tests/unit/` — `jsdom` environment; React components (React Testing Library) and pure functions.
-- `tests/integration/` — `node` environment; code that touches real `Request`/`Response`, route handlers, and (later) the database and workspaces together.
+- `tests/integration/` — `node` environment; code that touches real `Request`/`Response`, route handlers, the database (against a temp database, see [database.md](database.md)), and (later) workspaces together.
 
 Put a test in the project that matches its environment needs, not its size. Files are named `*.test.ts(x)`.
 
