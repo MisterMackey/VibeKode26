@@ -22,6 +22,7 @@ A to-do list web app kept by Lissie, a cat with attitude (an AI agent, coming la
 - `npm run db:reset` — delete the local database file and migrate a fresh one
 - `npm run lint` — Biome check (lint, format, imports)
 - `npm run format` — Biome format, writes files
+- `npm run test:e2e` — Playwright e2e tests against a real browser and a temp database; not part of `npm run qa` (see tech-docs/testing.md)
 
 ## Verify, don't recall
 
@@ -29,7 +30,7 @@ The technologies here are newer than your training data. Check APIs against curr
 
 ## Researching docs
 
-- Vendor `llms.txt` files first when the vendor has one (Drizzle: https://orm.drizzle.team/llms.txt); follow its links to the exact page.
+- Vendor `llms.txt` files first when the vendor has one (Drizzle: https://orm.drizzle.team/llms.txt; Better Auth: https://better-auth.com/llms.txt); follow its links to the exact page.
 - Next.js: the docs in `node_modules/next/dist/docs/` (they match the installed version).
 - Libraries with an installed skill (`.claude/skills/`: copilotkit, mastra, ...): use that skill.
 - Any other library: `npx ctx7@latest library <name> "<query>"`, then `npx ctx7@latest docs <libraryId> "<query>"` (see the find-docs skill).
@@ -47,7 +48,8 @@ Index:
 
 - [tech-docs/workspaces.md](tech-docs/workspaces.md) — workspace layout and why it exists before its content does
 - [tech-docs/database.md](tech-docs/database.md) — Drizzle + libsql setup, migrations, temp databases for tests
-- [tech-docs/testing.md](tech-docs/testing.md) — Vitest unit/integration split, QA script and CI, gotchas
+- [tech-docs/testing.md](tech-docs/testing.md) — Vitest unit/integration split, Playwright e2e, QA script and CI, gotchas
+- [tech-docs/auth.md](tech-docs/auth.md) — Better Auth setup: Drizzle adapter, plugins, session helper, schema regeneration
 
 ## Git workflow
 

@@ -5,7 +5,7 @@ SQLite file via `@libsql/client`, accessed with Drizzle ORM. `DATABASE_URL` (`.e
 ## Layout
 
 - `lib/db.ts` — the only module that opens the database at runtime; exports `db`. It imports `server-only`, so client bundles fail the build. Import it from server code only.
-- `lib/schema.ts` — Drizzle schema. Empty on purpose: todos arrive with the architecture, auth tables with authentication.
+- `lib/schema.ts` — Drizzle schema. Holds the Better Auth tables (see [auth.md](auth.md)); todo tables arrive with that feature.
 - `drizzle.config.ts` — drizzle-kit config (schema, `drizzle/` output, `DATABASE_URL` via dotenv).
 - `drizzle/` — generated migrations; commit them, never edit applied ones.
 
@@ -17,10 +17,11 @@ SQLite file via `@libsql/client`, accessed with Drizzle ORM. `DATABASE_URL` (`.e
 
 ## Temp databases for tests
 
-`scripts/with-temp-db.ts` exports `migrateTempDb()` (fresh temp dir, migrated via drizzle-kit, returns `url` and `cleanup`). Used two ways:
+`scripts/with-temp-db.ts` exports `migrateTempDb()` (fresh temp dir, migrated via drizzle-kit, returns `url` and `cleanup`). Used three ways:
 
-- `tests/integration/db.test.ts` calls it, sets `DATABASE_URL`, then imports `@/lib/db` dynamically, because `lib/db.ts` reads the env at import time.
-- `tsx scripts/with-temp-db.ts <command...>` runs a command with `DATABASE_URL` set to a throwaway migrated database; wrap the e2e server start in it once e2e exists (none yet, see [testing.md](testing.md)).
+- `tests/integration/*.test.ts` call it, set `DATABASE_URL`, then import `@/lib/db` (and anything that depends on it, like `@/lib/auth`) dynamically, because `lib/db.ts` reads the env at import time.
+- `tsx scripts/with-temp-db.ts <command...>` runs a command with `DATABASE_URL` set to a throwaway migrated database; useful for one-off manual runs.
+- `playwright.config.ts` calls `migrateTempDb()` directly (not the CLI mode above) to get a temp database for the e2e dev server — see [testing.md](testing.md).
 
 ## Gotchas
 

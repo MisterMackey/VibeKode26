@@ -15,7 +15,15 @@ Vitest is the only test runner. Config: `vitest.config.mts`.
 - Build runs before typecheck because Next generates global types (e.g. `LayoutProps`) in `.next/types`.
 - Fix findings in the code; do not suppress them.
 - `.github/workflows/qa.yml` runs the same script on every push and pull request (Node 24, `npm ci`, dummy `.env` generated from `.env.example`; no real secrets, no deployment).
-- No E2E/Playwright step: it is not used in this project.
+- Playwright e2e is not part of `npm run qa` or CI: it needs browser binaries (`npx playwright install`) that aren't provisioned there. Run it manually with `npm run test:e2e`.
+
+## Playwright e2e
+
+`e2e/*.spec.ts`, config in `playwright.config.ts`. Covers flows Vitest can't (real browser, async Server Components, full page navigation) — currently the sign-up/sign-out/sign-in flow in `e2e/auth.spec.ts`.
+
+- `npm run test:e2e` — runs against `npm run dev`, which Playwright's `webServer` option starts and stops automatically.
+- The config calls `migrateTempDb()` (see [database.md](database.md)) directly at config-load time and passes the resulting URL to the dev server via `webServer.env.DATABASE_URL`; no need to wrap the command in `with-temp-db.ts`'s CLI mode.
+- Needs browser binaries once per machine: `npx playwright install chromium`.
 
 ## Strategy
 
