@@ -7,12 +7,14 @@ import {
   createCopilotRuntimeHandler,
   type HandlerHookContext,
 } from "@copilotkit/runtime/v2";
+import { RequestContext } from "@mastra/core/request-context";
 import {
   getLissie,
   LISSIE_AGENT_ID,
   lissieThreadId,
   userIdFromThreadId,
 } from "./lissie";
+import { USER_ID_KEY } from "./lissie-tools";
 import { getUserId } from "./session";
 
 // Everything the CopilotKit runtime serves goes through the hooks below, and the
@@ -26,17 +28,23 @@ const unauthorized = () => json({ error: "Unauthorized" }, 401);
 // Another user's thread and a route we don't serve look the same: not found.
 const notFound = () => json({ error: "Not found" }, 404);
 
-// The agent is built per request so the memory scope (resourceId) is the
-// verified user, never something the browser says. Mastra memory refuses a
-// thread that belongs to a different resource, a second line behind the hooks.
+// The agent is built per request so the memory scope (resourceId) and the tools'
+// user id are the verified user, never something the browser or the model says.
+// Mastra memory refuses a thread that belongs to a different resource, a second
+// line behind the hooks. The tools read the user from the request context; this
+// is the only place that sets it, and nothing client-controlled is copied into it
+// (AG-UI adds its own "ag-ui" key beside it).
 const runtime = new CopilotRuntime({
   agents: async ({ request }) => {
     const userId = await getUserId(request.headers);
     if (!userId) throw unauthorized();
+    const requestContext = new RequestContext();
+    requestContext.set(USER_ID_KEY, userId);
     return {
       [LISSIE_AGENT_ID]: new MastraAgent({
         agent: getLissie(),
         resourceId: userId,
+        requestContext,
       }),
     };
   },
@@ -138,11 +146,57 @@ async function recallMessages(
   const messages: Message[] = [];
   for (const message of stored) {
     if (message.role !== "user" && message.role !== "assistant") continue;
-    const text = message.content.parts
-      .flatMap((part) => (part.type === "text" ? [part.text] : []))
-      .join("");
-    if (text)
-      messages.push({ id: message.id, role: message.role, content: text });
+    if (message.role === "user") {
+      const text = textOf(message.content.parts);
+      if (text) messages.push({ id: message.id, role: "user", content: text });
+      continue;
+    }
+    // One stored assistant message can interleave text and tool calls. Split it
+    // at each call, as the live stream does, so the chat shows them in order:
+    // text, call, text. A call without a result (cut off mid-run) is dropped.
+    let text: string[] = [];
+    let part = 0;
+    const nextId = () => (part++ === 0 ? message.id : `${message.id}:${part}`);
+    for (const p of message.content.parts) {
+      if (p.type === "text") {
+        text.push(p.text);
+      } else if (
+        p.type === "tool-invocation" &&
+        p.toolInvocation.state === "result"
+      ) {
+        const { toolCallId, toolName, args, result } = p.toolInvocation;
+        messages.push(
+          {
+            id: nextId(),
+            role: "assistant",
+            content: text.join(""),
+            toolCalls: [
+              {
+                id: toolCallId,
+                type: "function",
+                function: { name: toolName, arguments: JSON.stringify(args) },
+              },
+            ],
+          },
+          {
+            id: `${toolCallId}:result`,
+            role: "tool",
+            toolCallId,
+            content: JSON.stringify(result),
+          },
+        );
+        text = [];
+      }
+    }
+    if (text.join(""))
+      messages.push({
+        id: nextId(),
+        role: "assistant",
+        content: text.join(""),
+      });
   }
   return messages;
 }
+
+const textOf = (parts: { type: string; text?: string }[]) =>
+  parts.flatMap((p) => (p.type === "text" ? [p.text ?? ""] : [])).join("");

@@ -1,15 +1,16 @@
 # Agent: Lissie
 
-Lissie is one Mastra agent, served to a CopilotKit chat on `/` over AG-UI. She has no tools yet; they will call the todo service directly (see [architecture.md](architecture.md)).
+Lissie is one Mastra agent, served to a CopilotKit chat on `/` over AG-UI. Her tools (`listTodos`, `addTodo`, `setTodoDone`) are an adapter on the todo service (see [architecture.md](architecture.md)).
 
 Versions are pinned exactly in `package.json` (`@mastra/*`, `@ag-ui/*`, `@copilotkit/*`); all three libraries move fast, so read the installed docs (`node_modules/@mastra/*/dist/docs/`) and the CopilotKit docs as Markdown (`https://docs.copilotkit.ai/<path>.md`) instead of recalling APIs.
 
 ## Layout
 
 - `lib/lissie.ts` — the agent, its system prompt, model id, memory, and the per-user thread id.
+- `lib/lissie-tools.ts` — the three tools; `tests/integration/lissie-tools.test.ts` runs them on a temp database with two users, and through the endpoint with a scripted model.
 - `lib/copilot-runtime.ts` — the CopilotKit runtime, its auth hooks and the history replay. Everything security-relevant is in this one file.
 - `app/api/copilotkit/[[...slug]]/route.ts` — mounts the handler on GET/POST/PATCH/DELETE.
-- `components/lissie-chat.tsx` — the client chat; `app/page.tsx` passes it the server-computed thread id.
+- `components/lissie-chat.tsx` — the client chat; `app/page.tsx` passes it the server-computed thread id. `components/tool-line.ts` turns a tool call into its one-line text; `components/todo-sidebar.tsx` is the read-only list.
 - `tests/integration/copilot-runtime.test.ts` — one test per rule below, against the real handler, temp database and a mock model; `e2e/chat.spec.ts` for the browser.
 
 ## Model
@@ -36,11 +37,20 @@ The runtime serves many routes beyond the three the browser needs (thread lists,
 
 When adding a route or feature: extend the allow-list in `authorizeRoute`, add the route to `allRoutes` in the test, and keep the "allowed and denied lists cover every route" test passing.
 
+## Tools
+
+- The user id reaches a tool only through Mastra's request context: step 4 of the authorization rules builds a `RequestContext` with `userId` (`USER_ID_KEY`) from the session and hands it to `MastraAgent`; a tool reads it with `requestContext.get`. No tool input schema has a user field, so the model cannot supply one, and a tool without a user in the context throws.
+- Tools never touch the database; they call `lib/todo-service.ts` and so inherit its ownership rules. A rule violation (`todo-not-found`) is returned as `{ error: { code, message } }` for the model to read; anything else throws.
+- Persona: the comment on every added and every completed todo is an instruction in `LISSIE_INSTRUCTIONS`, not code. A mock model can't test it; the test only checks the instructions say it.
+- Tests that script a model use `MastraLanguageModelV2Mock` and must give every tool call a unique `toolCallId`; Mastra replays the stored result for an id it has seen in the thread.
+- Lissie is the browser's only write path to the list. The sidebar is a server component; `LissieChat` calls `router.refresh()` on every live `TOOL_CALL_RESULT` (not on history replay, which is a messages snapshot).
+- The chat draws every tool call through one wildcard `useRenderTool` and `describeToolCall`; a new tool needs a case there or it gets the generic "Lissie used <name>" line.
+
 ## History replay on `connect`
 
 CopilotKit hydrates a chat by calling `agent/connect` for the thread. The default `InMemoryAgentRunner` has nothing to replay after a restart, so `authorizeRoute` answers `connect` itself, after the ownership check, with `RUN_STARTED`, a `MESSAGES_SNAPSHOT` recalled from Mastra memory, `RUN_FINISHED`. It does this by throwing the Response (the hook short-circuit); the runtime's own connect handler is never reached.
 
-- Text of user and assistant messages only. When tools arrive, extend `recallMessages` with tool calls and results.
+- User and assistant text, plus tool calls and their results. A stored assistant message that interleaves text and calls is split at each call (text, call, result, text) with derived ids, as the live stream does; a call without a result is dropped.
 - A run still streaming when the page reloads isn't replayed until it has finished and been saved.
 - A thread that doesn't exist yet (first visit) is an empty history; Mastra throws for it, `recallMessages` catches.
 

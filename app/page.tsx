@@ -3,10 +3,12 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { LissieChat } from "@/components/lissie-chat";
 import { SignOutButton } from "@/components/sign-out-button";
+import { TodoSidebar } from "@/components/todo-sidebar";
 import { db } from "@/lib/db";
 import { lissieThreadId } from "@/lib/lissie";
 import { user as userTable } from "@/lib/schema";
 import { getUserId } from "@/lib/session";
+import { listTodos } from "@/lib/todo-service";
 
 export default async function Home() {
   const userId = await getUserId(await headers());
@@ -16,6 +18,8 @@ export default async function Home() {
     .select({ name: userTable.name })
     .from(userTable)
     .where(eq(userTable.id, userId));
+
+  const todos = await listTodos(userId);
 
   return (
     <div className="flex h-dvh flex-col bg-zinc-50 dark:bg-black">
@@ -30,8 +34,11 @@ export default async function Home() {
         </div>
         <SignOutButton />
       </header>
-      <main className="min-h-0 flex-1">
-        <LissieChat threadId={lissieThreadId(userId)} />
+      <main className="flex min-h-0 flex-1 flex-col md:flex-row">
+        <div className="min-h-0 flex-1">
+          <LissieChat threadId={lissieThreadId(userId)} />
+        </div>
+        <TodoSidebar todos={todos} />
       </main>
     </div>
   );
