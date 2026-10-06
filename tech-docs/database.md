@@ -5,6 +5,7 @@ SQLite file via `@libsql/client`, accessed with Drizzle ORM. `DATABASE_URL` (`.e
 ## Layout
 
 - `lib/db.ts` — the only module that opens the database at runtime; exports `db`. It imports `server-only`, so client bundles fail the build. Import it from server code only.
+- Mastra memory (`lib/lissie.ts`) opens the same file through its own `LibSQLStore` and creates its `mastra_*` tables itself; they are not in the schema or migrations (see [agent.md](agent.md)).
 - `lib/schema.ts` — Drizzle schema. Holds the Better Auth tables (see [auth.md](auth.md)) and `todos` (see [architecture.md](architecture.md)).
 - `drizzle.config.ts` — drizzle-kit config (schema, `drizzle/` output, `DATABASE_URL` via dotenv).
 - `drizzle/` — generated migrations; commit them, never edit applied ones.

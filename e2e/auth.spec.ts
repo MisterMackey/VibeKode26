@@ -11,9 +11,7 @@ test("sign-up, sign-out, and sign-in", async ({ page }) => {
   await page.getByRole("button", { name: "Sign up" }).click();
 
   await expect(page).toHaveURL("/");
-  await expect(
-    page.getByRole("heading", { name: "Welcome, Lissie" }),
-  ).toBeVisible();
+  await expect(page.getByText("keeping Lissie's list")).toBeVisible();
 
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page).toHaveURL("/login");
@@ -23,7 +21,5 @@ test("sign-up, sign-out, and sign-in", async ({ page }) => {
   await page.getByRole("button", { name: "Log in" }).click();
 
   await expect(page).toHaveURL("/");
-  await expect(
-    page.getByRole("heading", { name: "Welcome, Lissie" }),
-  ).toBeVisible();
+  await expect(page.getByText("keeping Lissie's list")).toBeVisible();
 });

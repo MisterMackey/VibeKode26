@@ -19,8 +19,16 @@
     "db:seed": "tsx --conditions=react-server scripts/seed.mts"
   },
   "dependencies": {
+    "@ag-ui/client": "1.0.1",
+    "@ag-ui/core": "1.0.1",
+    "@ag-ui/mastra": "1.1.6",
     "@better-auth/drizzle-adapter": "1.7.7",
+    "@copilotkit/react-core": "1.77.0",
+    "@copilotkit/runtime": "1.77.0",
     "@libsql/client": "^0.18.0",
+    "@mastra/core": "1.74.0",
+    "@mastra/libsql": "1.25.0",
+    "@mastra/memory": "1.35.0",
     "@todo-cat/contract": "*",
     "better-auth": "1.7.7",
     "dotenv": "^18.0.5",

@@ -10,7 +10,7 @@ Better Auth (`better-auth`, `@better-auth/drizzle-adapter`), pinned to `1.7.7` e
 - `app/api/auth/[...all]/route.ts` — mounts `auth.handler` via `toNextJsHandler`.
 - `app/signup/page.tsx`, `app/login/page.tsx` — client components calling `authClient.signUp.email` / `signIn.email`.
 - `components/ui/form.tsx` — shared Tailwind form pieces (`AuthCard`, `FormField`, `SubmitButton`, `FormError`, `FormFooter`, `FooterLink`) used by both pages.
-- `app/page.tsx` — server component; redirects to `/login` if `getUserId` returns null, otherwise shows the user's name and `<SignOutButton>`. It looks up the display name with a plain `db.select()`, not a second session read — the helper above is still the only session reader.
+- `app/page.tsx` — server component; redirects to `/login` if `getUserId` returns null, otherwise renders the header (user's name, `<SignOutButton>`) and Lissie's chat ([agent.md](agent.md)). It looks up the display name with a plain `db.select()`, not a second session read — the helper above is still the only session reader.
 
 ## Why `getUserId` already handles bearer tokens
 

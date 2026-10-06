@@ -20,7 +20,7 @@ Vitest is the only test runner. Config: `vitest.config.mts`.
 
 ## Playwright e2e
 
-`e2e/*.spec.ts`, config in `playwright.config.ts`. Covers flows Vitest can't (real browser, async Server Components, full page navigation) — currently sign-up/sign-out/sign-in (`e2e/auth.spec.ts`) and approving a CLI login code on `/device` (`e2e/device.spec.ts`).
+`e2e/*.spec.ts`, config in `playwright.config.ts`. Covers flows Vitest can't (real browser, async Server Components, full page navigation) — currently sign-up/sign-out/sign-in (`e2e/auth.spec.ts`), approving a CLI login code on `/device` (`e2e/device.spec.ts`) and the chat on `/` (`e2e/chat.spec.ts`; the model isn't reachable there, so it asserts the run request, not a reply).
 
 - `npm run test:e2e` — runs against `npm run dev`, which Playwright's `webServer` option starts and stops automatically.
 - The config calls `migrateTempDb()` (see [database.md](database.md)) directly at config-load time and passes the resulting URL to the dev server via `webServer.env.DATABASE_URL`; no need to wrap the command in `with-temp-db.ts`'s CLI mode.
